@@ -30,7 +30,8 @@ public class CannonGame extends Game implements Serializable{
 
 	// internal representation of the game state
 	// TODO: insert additional game data here
-
+	private int[][] board = new int[10][10];
+	private static int[] nullReihe = {0,0,0,0,0,0,0,0,0,0};
 	
 	/************************
 	 * constructors
@@ -40,7 +41,11 @@ public class CannonGame extends Game implements Serializable{
 		super();
 
 		// TODO: add further initializations if necessary
-		
+		for(int i=0;i<10;i++) {
+			for(int j=0;j<10;j++) {
+				board[i][j]=0;
+			}
+		}
 	}
 	
 	/*******************************************
@@ -206,14 +211,75 @@ public class CannonGame extends Game implements Serializable{
 	@Override
 	public void setBoard(String state) {
 
-		//TODO: implement
+		String[] boardString = state.split("/");
+		for(int i=0;i<10;i++) {
+			String s = boardString[i];
+			if(s.isEmpty()) {
+				board[i] = nullReihe.clone();
+				continue;
+			}
+			int k=0;
+			for(int j=0;j<s.length();j++) {
+				Character c = s.charAt(j);
+				try {
+					int x = Integer.parseInt(Character.toString(c));
+					for(int l=0;l<x;l++) {
+						board[i][k]=0;
+						k++;
+					}
+				}catch(NumberFormatException e) {
+					if(c.equals('w')) {
+						board[i][k] = 1;
+					}else if(c.equals('W')) {
+						board[i][k] = 2;
+					}else if(c.equals('b')) {
+						board[i][k] = -1;
+					}else if(c.equals('B')) {
+						board[i][k] = -2;
+					}
+					k++;
+				}
+			}
+		}
 	}
 	
 	@Override
 	public String getBoard() {
-
-		//TODO: replace with real implementation
-		return "";
+		
+		String boardString = "";
+		for(int i=0;i<10;i++) {
+			int j=0;
+			while(j<10) {
+				int count = 0;
+				while(j<10&& board[i][j]==0) {
+					count++;
+					j++;
+				}
+				if(count!=0) {
+					if(count==10) {
+						break;
+					}
+					boardString += Integer.toString(count);
+				}
+				if(j==10) {
+					break;
+				}
+				if(board[i][j]==1) {
+					boardString += "w";
+				}else if(board[i][j]==2) {
+					boardString += "W";
+				}else if(board[i][j]==-1) {
+					boardString += "b";
+				}else if(board[i][j]==-2) {
+					boardString += "B";
+				}
+				j++;
+			}
+			if(i!=9) {
+				boardString += "/";
+			}
+		}
+		return boardString;
 	}
 	
 	@Override
