@@ -41,11 +41,7 @@ public class CannonGame extends Game implements Serializable{
 	public CannonGame() {
 		super();
 
-		for(int i=0;i<10;i++) {
-			for(int j=0;j<10;j++) {
-				board[i][j]=0;
-			}
-		}
+		setBoard("/1w1w1w1w1w/1w1w1w1w1w/1w1w1w1w1w///b1b1b1b1b1/b1b1b1b1b1/b1b1b1b1b1/");
 	}
 	
 	/*******************************************
@@ -211,7 +207,11 @@ public class CannonGame extends Game implements Serializable{
 	@Override
 	public void setBoard(String state) {
 
-		String[] boardString = state.split("/");
+		String[] splitString = state.split("/");
+		String[] boardString = {"","","","","","","","","",""};
+		for(int i=0;i<splitString.length;i++) {
+			boardString[i] = splitString[i];
+		}
 		for(int i=0;i<10;i++) {
 			String s = boardString[i];
 			if(s.isEmpty()) {
@@ -284,6 +284,7 @@ public class CannonGame extends Game implements Serializable{
 	
 	@Override
 	public boolean tryMove(String moveString, Player player) {
+		System.out.println(getBoard());
 		if(isWhiteNext()) {
 			if(player.equals(this.blackPlayer)) {System.out.println("wrong player");return false;}
 		}else {
@@ -303,17 +304,29 @@ public class CannonGame extends Game implements Serializable{
 		int diff_y = pos2y-pos1y;
 		int diff_x_abs = Math.abs(diff_x);
 		int diff_y_abs = Math.abs(diff_y);
-		System.out.println("Coordinates correct");
-		System.out.println(Integer.toString(pos1x)+Integer.toString(pos1y)+Integer.toString(pos2x)+Integer.toString(pos2y));
+//		System.out.println("Coordinates correct");
+//		System.out.println(Integer.toString(pos1x)+Integer.toString(pos1y)+Integer.toString(pos2x)+Integer.toString(pos2y));
 		
 		if(diff_x!=0 && diff_y!=0 && diff_x_abs!=diff_y_abs) {return false;}
-		if(diff_x==0 && diff_y==0) {
-			if((playerIsWhite && pos1y!=0) || (!playerIsWhite && pos1y!=9)) {return false;}
-			if((playerIsWhite && whiteCityPlaced) || (!playerIsWhite && blackCityPlaced)) {return false;}
-			if(board[pos1y][pos1x]!=0) {return false;}
-			board[pos1y][pos1x] = playerIsWhite ? 2 : -2;
-			updateNext();
-			return true;
+		if(!whiteCityPlaced) {
+			if(blackCityPlaced && !playerIsWhite) {return false;}
+			if(playerIsWhite) {
+				if(diff_x != 0 || diff_y !=0 || pos1y!=0 || pos1x==0 || pos1x==9) {return false;}
+				board[pos1y][pos1x] = 2;
+				whiteCityPlaced = true;
+				updateNext();
+				return true;
+			}
+		}
+		if(!blackCityPlaced) {
+			if(whiteCityPlaced && playerIsWhite) {return false;}
+			if(!playerIsWhite) {
+				if(diff_x != 0 || diff_y !=0 || pos1y!=9 || pos1x==0 || pos1x==9) {return false;}
+				board[pos1y][pos1x] = -2;
+				updateNext();
+				blackCityPlaced = true;
+				return true;
+			}
 		}
 		if(diff_x_abs > 5 || diff_y_abs > 5) {return false;}
 		if(board[pos1y][pos1x]==0 || board[pos1y][pos1x]==2 || board[pos1y][pos1x]==-2) {return false;}

@@ -1,4 +1,4 @@
-module Format where
+module CannonFormat where
 
 import System.IO
 import Util
@@ -29,5 +29,5 @@ assertFormat actual check =
 format = TestList [  (TestLabel "MOVE FORMAT WRONG!" (TestCase (assertFormat (CannonBot.getMove "4W5/1w1w1w1w1w/1w1w1w1w1w/1w1w1w1w1w///b1b1b1b1b1/b1b1b1b1b1/b1b1b1b1b1/7B2 w") formatMove))),
     (TestLabel "LIST FORMAT WRONG!" (TestCase (assertFormat (CannonBot.listMoves "4W5/1w1w1w1w1w/1w1w1w1w1w/1w1w1w1w1w///b1b1b1b1b1/b1b1b1b1b1/b1b1b1b1b1/7B2 w") formatList))) ]
     
-main :: IO (Counts, Int)
-main =  runTestText (putTextToHandle stdout False) format
+-- main :: IO (Counts, Int)
+-- main =  runTestText (putTextToHandle stdout False) format
