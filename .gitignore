@@ -1,0 +1,5 @@
+/GameServerVorgabe/bin/.gitignore
+/GameServerVorgabe/bin/src/de/tuberlin/sese/swtpp/gameserver/control/GameFactory.class
+/GameServerVorgabe/bin/src/de/tuberlin/sese/swtpp/gameserver/model/cannon/CannonGame.class
+/GameServerVorgabe/bin/src/de/tuberlin/sese/swtpp/gameserver/test/cannon/AllTests.class
+/GameServerVorgabe/bin/src/de/tuberlin/sese/swtpp/gameserver/web/GameServerServlet.class
