@@ -40,7 +40,7 @@ public class GameServerServlet extends HttpServlet {
     
 	// TODO: change location of data if you like
 	// this is just hardcoded to "somewhere"
-	private static final String DB_PATH = "test.db";
+	private static final String DB_PATH = "C:\\Users\\carlr\\workspace\\SWTPP\\GameServerVorgabe\\database.db";
 	
 /////////////////////////////////////////////////////////////////////
 //        GLOBAL DATA                                              //
