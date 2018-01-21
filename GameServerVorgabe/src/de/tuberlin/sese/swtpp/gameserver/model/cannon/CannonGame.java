@@ -204,9 +204,29 @@ public class CannonGame extends Game implements Serializable{
 	 * !!!!!!!!! To be implemented !!!!!!!!!!!!
 	 ******************************************/
 	
+	public void setBoardChar(int i, int k, Character c) {
+		if(c.equals('w')) {
+			board[i][k] = 1;
+		}else if(c.equals('W')) {
+			board[i][k] = 2;
+		}else if(c.equals('b')) {
+			board[i][k] = -1;
+		}else if(c.equals('B')) {
+			board[i][k] = -2;
+		}
+	}
+	
+	public int setBoardInt(int i, int k, Character c) {
+		int x = Integer.parseInt(Character.toString(c));
+		for(int l=0;l<x;l++) {
+			board[i][k]=0;
+			k++;
+		}
+		return k;
+	}
+	
 	@Override
 	public void setBoard(String state) {
-
 		String[] splitString = state.split("/");
 		String[] boardString = {"","","","","","","","","",""};
 		for(int i=0;i<splitString.length;i++) {
@@ -222,59 +242,56 @@ public class CannonGame extends Game implements Serializable{
 			for(int j=0;j<s.length();j++) {
 				Character c = s.charAt(j);
 				try {
-					int x = Integer.parseInt(Character.toString(c));
-					for(int l=0;l<x;l++) {
-						board[i][k]=0;
-						k++;
-					}
+					k = setBoardInt(i,k,c);					
 				}catch(Exception e) {
-					if(c.equals('w')) {
-						board[i][k] = 1;
-					}else if(c.equals('W')) {
-						board[i][k] = 2;
-					}else if(c.equals('b')) {
-						board[i][k] = -1;
-					}else if(c.equals('B')) {
-						board[i][k] = -2;
-					}
+					setBoardChar(i, k, c);
 					k++;
 				}
 			}
 		}
 	}
 	
-	@Override
-	public String getBoard() {
-		
-		String boardString = "";
-		for(int i=0;i<10;i++) {
-			int j=0;
-			while(j<10) {
-				int count = 0;
-				while(j<10&& board[i][j]==0) {
-					count++;
-					j++;
-				}
-				if(count!=0) {
-					if(count==10) {
-						break;
-					}
-					boardString += Integer.toString(count);
-				}
-				if(j==10) {
-					break;
-				}
-				if(board[i][j]==1) {
-					boardString += "w";
-				}else if(board[i][j]==2) {
-					boardString += "W";
-				}else if(board[i][j]==-1) {
-					boardString += "b";
-				}else if(board[i][j]==-2) {
-					boardString += "B";
-				}
+	public String getBoardChar(int i, int j, String boardString) {
+		if(board[i][j]==1) {
+			boardString += "w";
+		}else if(board[i][j]==2) {
+			boardString += "W";
+		}else if(board[i][j]==-1) {
+			boardString += "b";
+		}else if(board[i][j]==-2) {
+			boardString += "B";
+		}
+		return boardString;
+	}
+	
+	public String readRow(int i, String boardString) {
+		int j=0;
+		while(j<10) {
+			int count = 0;
+			while(j<10&& board[i][j]==0) {
+				count++;
 				j++;
 			}
+			if(count!=0) {
+				if(count==10) {
+					break;
+				}
+				boardString += Integer.toString(count);
+			}
+			if(j==10) {
+				break;
+			}
+			boardString = getBoardChar(i, j, boardString);
+			j++;
+		}
+		return boardString;
+	}
+	
+	@Override
+	public String getBoard() {
+		String boardString = "";
+		for(int i=0;i<10;i++) {
+			boardString = readRow(i,boardString);
 			if(i!=9) {
 				boardString += "/";
 			}
@@ -282,129 +299,188 @@ public class CannonGame extends Game implements Serializable{
 		return boardString;
 	}
 	
-	@Override
-	public boolean tryMove(String moveString, Player player) {
-		System.out.println(getBoard());
-		if(isWhiteNext()) {
-			if(player.equals(this.blackPlayer)) {System.out.println("wrong player");return false;}
-		}else {
-			if(player.equals(this.whitePlayer)) {System.out.println("wrong player");return false;}
-		}
-		boolean playerIsWhite = player.equals(this.blackPlayer) ? false : true;
-		int soldier = playerIsWhite ? 1 : -1;
-		int pos1x,pos1y,pos2x,pos2y;
-		String[] pos = moveString.split("-");
-		if(pos.length!=2 || pos[0].length()!=2 || pos[1].length()!=2) {System.out.println("length");return false;}
-		pos1x = pos[0].charAt(0)-'a';
-		try{pos1y = 9-Integer.parseInt(Character.toString(pos[0].charAt(1)));}catch(Exception e) {System.out.println("parseInt");return false;}
-		pos2x = pos[1].charAt(0)-'a';
-		try{pos2y = 9-Integer.parseInt(Character.toString(pos[1].charAt(1)));}catch(Exception e) {System.out.println("parseInt");return false;}
-		if(!(0<=pos1x && pos1x<=9) || !(0<=pos1y && pos1y<=9) || !(0<=pos2x && pos2x<=9) || !(0<=pos2y && pos2y<=9)) {System.out.println("range");return false;}
-		int diff_x = pos2x-pos1x;
-		int diff_y = pos2y-pos1y;
-		int diff_x_abs = Math.abs(diff_x);
-		int diff_y_abs = Math.abs(diff_y);
-//		System.out.println("Coordinates correct");
-//		System.out.println(Integer.toString(pos1x)+Integer.toString(pos1y)+Integer.toString(pos2x)+Integer.toString(pos2y));
-		
-		if(diff_x!=0 && diff_y!=0 && diff_x_abs!=diff_y_abs) {return false;}
+	public boolean getPlayerBoolean(Player player) {
+		return player.equals(this.blackPlayer) ? false : true;
+	}
+	
+	public boolean correctPlayer(boolean playerIsWhite) {
+		if((isWhiteNext() && !playerIsWhite) || (!isWhiteNext() && playerIsWhite)) {return false;}
+		return true;
+	}
+	
+	public int placeWhiteCity(int pos1x, int pos1y, int pos2x, int pos2y, boolean playerIsWhite) {
 		if(!whiteCityPlaced) {
-			if(blackCityPlaced && !playerIsWhite) {return false;}
+			if(blackCityPlaced && !playerIsWhite) {return -1;}
 			if(playerIsWhite) {
-				if(diff_x != 0 || diff_y !=0 || pos1y!=0 || pos1x==0 || pos1x==9) {return false;}
+				if(pos1x-pos2x != 0 || pos1y-pos2y !=0 || pos1y!=0 || pos1x==0 || pos1x==9) {return -1;}
 				board[pos1y][pos1x] = 2;
 				whiteCityPlaced = true;
 				updateNext();
-				return true;
+				return 1;
 			}
 		}
+		return 0;
+	}
+	
+	public int placeBlackCity(int pos1x, int pos1y, int pos2x, int pos2y, boolean playerIsWhite) {
 		if(!blackCityPlaced) {
-			if(whiteCityPlaced && playerIsWhite) {return false;}
+			if(whiteCityPlaced && playerIsWhite) {return -1;}
 			if(!playerIsWhite) {
-				if(diff_x != 0 || diff_y !=0 || pos1y!=9 || pos1x==0 || pos1x==9) {return false;}
+				if(pos1x-pos2x != 0 || pos1y-pos2y !=0 || pos1y!=9 || pos1x==0 || pos1x==9) {return -1;}
 				board[pos1y][pos1x] = -2;
 				updateNext();
 				blackCityPlaced = true;
-				return true;
+				return 1;
 			}
 		}
-		if(diff_x_abs > 5 || diff_y_abs > 5) {return false;}
-		if(board[pos1y][pos1x]==0 || board[pos1y][pos1x]==2 || board[pos1y][pos1x]==-2) {return false;}
-		if((board[pos1y][pos1x]==1 && !playerIsWhite) || (board[pos1y][pos1x]==-1 && playerIsWhite)) {return false;}
-		if(diff_y_abs==1) {
-			if(diff_x_abs!=0 && diff_x_abs!=1) {return false;}
-			if((diff_y<0 && playerIsWhite) || (diff_y>0 && !playerIsWhite)) {return false;}
-			if((board[pos2y][pos2x]==1 && playerIsWhite) || (board[pos2y][pos2x]==-1 && !playerIsWhite)) {return false;}
-			board[pos2y][pos2x] = soldier;
-			board[pos1y][pos1x] = 0;
-			updateNext();
-			return true;
+		return 0;
+	}
+	
+	public int[] parseString(String moveString) {
+		int[] posArray = new int[4];
+		String[] pos = moveString.split("-");
+		if(pos.length!=2 || pos[0].length()!=2 || pos[1].length()!=2) {System.out.println("length");return null;}
+		posArray[0] = pos[0].charAt(0)-'a';
+		try{posArray[1] = 9-Integer.parseInt(Character.toString(pos[0].charAt(1)));}catch(Exception e) {System.out.println("parseInt");return null;}
+		posArray[2] = pos[1].charAt(0)-'a';
+		try{posArray[3] = 9-Integer.parseInt(Character.toString(pos[1].charAt(1)));}catch(Exception e) {System.out.println("parseInt");return null;}
+		if(!(0<=posArray[0] && posArray[0]<=9) || !(0<=posArray[1] && posArray[1]<=9) || !(0<=posArray[2] && posArray[2]<=9) || !(0<=posArray[3] && posArray[3]<=9)) {System.out.println("range");return null;}
+		return posArray;
+	}
+	
+	public boolean trySoldierMove(int pos1x, int pos1y, int pos2x, int pos2y, boolean playerIsWhite) {
+		int diff_x = pos2x-pos1x;
+		int diff_y = pos2y-pos1y;
+		int diff_x_abs = Math.abs(diff_x);
+		if(diff_x_abs!=0 && diff_x_abs!=1) {return false;}
+		if((diff_y<0 && playerIsWhite) || (diff_y>0 && !playerIsWhite)) {return false;}
+		if((board[pos2y][pos2x]==1 && playerIsWhite) || (board[pos2y][pos2x]==-1 && !playerIsWhite)) {return false;}
+		board[pos2y][pos2x] = playerIsWhite? 1: -1;
+		board[pos1y][pos1x] = 0;
+		updateNext();
+		return true;
+	}
+	
+	public boolean trySoldierHit(int pos1x, int pos1y, int pos2x, int pos2y, boolean playerIsWhite) {
+		int diff_y = pos2y-pos1y;
+		if(diff_y!=0) {return false;}
+		if((diff_y<0 && playerIsWhite) || (diff_y>0 && !playerIsWhite)) {return false;}
+		if((board[pos2y][pos2x]!=-1 && board[pos2y][pos2x]!=-2 && playerIsWhite) || (board[pos2y][pos2x]!=1 && board[pos2y][pos2x]!=2 && !playerIsWhite)) {return false;}
+		board[pos2y][pos2x] = playerIsWhite? 1: -1;
+		board[pos1y][pos1x] = 0;
+		updateNext();
+		return true;
+	}
+	
+	public boolean trySoldierBackup(int pos1x, int pos1y, int pos2x, int pos2y, boolean playerIsWhite) {
+		int diff_x = pos2x-pos1x;
+		int diff_y = pos2y-pos1y;
+		if((diff_y<0 && !playerIsWhite) || (diff_y>0 && playerIsWhite)) {return false;}
+		if(!isThreatened(pos1x, pos1y, playerIsWhite?-1:1)) {return false;}
+		if(board[pos2y][pos2x]!=0 || board[pos2y+diff_y/2][pos2x+diff_x/2]!=0) {return false;}
+		board[pos2y][pos2x] = playerIsWhite ? 1 : -1;
+		board[pos1y][pos1x] = 0;
+		updateNext();
+		return true;
+	}
+	
+	public boolean tryCannonMove(int pos1x, int pos1y, int pos2x, int pos2y, boolean playerIsWhite) {
+		int diff_x = pos2x-pos1x;
+		int diff_y = pos2y-pos1y;
+		if((board[pos1y+diff_y/3][pos1x+diff_x/3]!=1 && playerIsWhite) || (board[pos1y+diff_y*2/3][pos1x+diff_x*2/3]!=1 && playerIsWhite)) {return false;}
+		if((board[pos1y+diff_y/3][pos1x+diff_x/3]!=-1 && !playerIsWhite) || (board[pos1y+diff_y*2/3][pos1x+diff_x*2/3]!=-1 && !playerIsWhite)) {return false;}
+		if(board[pos2y][pos2x]!=0) {return false;}
+		board[pos2y][pos2x] = playerIsWhite ? 1 : -1;
+		board[pos1y][pos1x] = 0;
+		updateNext();
+		return true;
+	}
+	
+	public boolean tryShotUp(int pos1x, int pos1y, int pos2x, int pos2y, int soldier) {
+		int diff_y = pos2y-pos1y;
+		if(diff_y<0) {
+			if((board[pos1y-1][pos1x-1]!=soldier) || (board[pos1y-2][pos1x-2]!=soldier)) {return false;}
+			if(board[pos1y-3][pos1x-3]!=0) {return false;}
+		}else if(diff_y==0) {
+			if((board[pos1y][pos1x-1]!=soldier) || (board[pos1y][pos1x-2]!=soldier)) {return false;}
+			if(board[pos1y][pos1x-3]!=0) {return false;}
+		}else if(diff_y>0){
+			if((board[pos1y+1][pos1x-1]!=soldier) || (board[pos1y+2][pos1x-2]!=soldier)) {return false;}
+			if(board[pos1y+3][pos1x-3]!=0) {return false;}
 		}
-		if(diff_x_abs==1) {
-			if(diff_y!=0) {return false;}
-			if((diff_y<0 && playerIsWhite) || (diff_y>0 && !playerIsWhite)) {return false;}
-			if((board[pos2y][pos2x]!=-1 && board[pos2y][pos2x]!=-2 && playerIsWhite) || (board[pos2y][pos2x]!=1 && board[pos2y][pos2x]!=2 && !playerIsWhite)) {return false;}
-			board[pos2y][pos2x] = soldier;
-			board[pos1y][pos1x] = 0;
-			updateNext();
-			return true;
+		return true;
+	}
+	
+	public boolean tryShotSide(int pos1x, int pos1y, int pos2x, int pos2y, int soldier) {
+		int diff_y = pos2y-pos1y;
+		if(diff_y<0) {
+			if((board[pos1y-1][pos1x]!=soldier) || (board[pos1y-2][pos1x]!=soldier)) {return false;}
+			if(board[pos1y-3][pos1x]!=0) {return false;}
+		}else if(diff_y>0){
+			if((board[pos1y+1][pos1x]!=soldier) || (board[pos1y+2][pos1x]!=soldier)) {return false;}
+			if(board[pos1y+3][pos1x]!=0) {return false;}
 		}
-		if(diff_x_abs==2 && diff_y_abs!=2) {return false;}
-		if(diff_y_abs==2) {
-			if((diff_y<0 && !playerIsWhite) || (diff_y>0 && playerIsWhite)) {return false;}
-			if(!isThreatened(pos1x, pos1y, playerIsWhite?-1:1)) {return false;}
-			if(board[pos2y][pos2x]!=0 || board[pos2y+diff_y/2][pos2x+diff_x/2]!=0) {return false;}
-			board[pos2y][pos2x] = playerIsWhite ? 1 : -1;
-			board[pos1y][pos1x] = 0;
-			updateNext();
-			return true;
+		return true;
+	}
+	
+	public boolean tryShotDown(int pos1x, int pos1y, int pos2x, int pos2y, int soldier) {
+		int diff_y = pos2y-pos1y;
+		if(diff_y<0) {
+			if((board[pos1y-1][pos1x+1]!=soldier) || (board[pos1y-2][pos1x+2]!=soldier)) {return false;}
+			if(board[pos1y-3][pos1x+3]!=0) {return false;}
+		}else if(diff_y==0) {
+			if((board[pos1y][pos1x+1]!=soldier) || (board[pos1y][pos1x+2]!=soldier)) {return false;}
+			if(board[pos1y][pos1x+3]!=0) {return false;}
+		}else if(diff_y>0){
+			if((board[pos1y+1][pos1x+1]!=soldier) || (board[pos1y+2][pos1x+2]!=soldier)) {return false;}
+			if(board[pos1y+3][pos1x+3]!=0) {return false;}
 		}
-		if(diff_x_abs==3 || diff_y_abs==3) {
-			if((board[pos1y+diff_y/3][pos1x+diff_x/3]!=1 && playerIsWhite) || (board[pos1y+diff_y*2/3][pos1x+diff_x*2/3]!=1 && playerIsWhite)) {return false;}
-			if((board[pos1y+diff_y/3][pos1x+diff_x/3]!=-1 && !playerIsWhite) || (board[pos1y+diff_y*2/3][pos1x+diff_x*2/3]!=-1 && !playerIsWhite)) {return false;}
-			if(board[pos2y][pos2x]!=0) {return false;}
-			board[pos2y][pos2x] = soldier;
-			board[pos1y][pos1x] = 0;
-			updateNext();
-			return true;
+		return true;
+	}
+	
+	public boolean tryCannonShot(int pos1x, int pos1y, int pos2x, int pos2y, boolean playerIsWhite) {
+		int diff_x = pos2x-pos1x;
+		int soldier = playerIsWhite ? 1 : -1;
+		if(diff_x<0) {
+			if(!tryShotUp(pos1x, pos1y, pos2x, pos2y, soldier)) {return false;}
+		}else if(diff_x==0) {
+			if(!tryShotSide(pos1x, pos1y, pos2x, pos2y, soldier)) {return false;}
+		}else if(diff_x>0){
+			if(!tryShotDown(pos1x, pos1y, pos2x, pos2y, soldier)) {return false;}
 		}
-		if(diff_x_abs==4 || diff_y_abs==4 || diff_x_abs==5 || diff_y_abs==5) {
-			if(diff_x<0) {
-				if(diff_y<0) {
-					if((board[pos1y-1][pos1x-1]!=soldier) || (board[pos1y-2][pos1x-2]!=soldier)) {return false;}
-					if(board[pos1y-3][pos1x-3]!=0) {return false;}
-				}else if(diff_y==0) {
-					if((board[pos1y][pos1x-1]!=soldier) || (board[pos1y][pos1x-2]!=soldier)) {return false;}
-					if(board[pos1y][pos1x-3]!=0) {return false;}
-				}else if(diff_y>0){
-					if((board[pos1y+1][pos1x-1]!=soldier) || (board[pos1y+2][pos1x-2]!=soldier)) {return false;}
-					if(board[pos1y+3][pos1x-3]!=0) {return false;}
-				}
-			}else if(diff_x==0) {
-				if(diff_y<0) {
-					if((board[pos1y-1][pos1x]!=soldier) || (board[pos1y-2][pos1x]!=soldier)) {return false;}
-					if(board[pos1y-3][pos1x]!=0) {return false;}
-				}else if(diff_y>0){
-					if((board[pos1y+1][pos1x]!=soldier) || (board[pos1y+2][pos1x]!=soldier)) {return false;}
-					if(board[pos1y+3][pos1x]!=0) {return false;}
-				}
-			}else if(diff_x>0){
-				if(diff_y<0) {
-					if((board[pos1y-1][pos1x+1]!=soldier) || (board[pos1y-2][pos1x+2]!=soldier)) {return false;}
-					if(board[pos1y-3][pos1x+3]!=0) {return false;}
-				}else if(diff_y==0) {
-					if((board[pos1y][pos1x+1]!=soldier) || (board[pos1y][pos1x+2]!=soldier)) {return false;}
-					if(board[pos1y][pos1x+3]!=0) {return false;}
-				}else if(diff_y>0){
-					if((board[pos1y+1][pos1x+1]!=soldier) || (board[pos1y+2][pos1x+2]!=soldier)) {return false;}
-					if(board[pos1y+3][pos1x+3]!=0) {return false;}
-				}
-			}
-			if(board[pos2y][pos2x]!=-soldier) {return false;}
-			board[pos2y][pos2x] = 0;
-			updateNext();
-			return true;
-		}
+		if(board[pos2y][pos2x]!=-soldier) {return false;}
+		board[pos2y][pos2x] = 0;
+		updateNext();
+		return true;
+	}
+	
+	@Override
+	public boolean tryMove(String moveString, Player player) {
+		System.out.println(getBoard());
+		boolean playerIsWhite = getPlayerBoolean(player);
+		if(!correctPlayer(playerIsWhite)) {return false;}
+		int[] posArray = parseString(moveString);
+		if(posArray==null) {return false;}		
+		if(posArray[2]-posArray[0]!=0 && posArray[3]-posArray[1]!=0 && Math.abs(posArray[2]-posArray[0])!=Math.abs(posArray[3]-posArray[1])) {return false;}
+		if(Math.abs(posArray[2]-posArray[0]) > 5 || Math.abs(posArray[3]-posArray[1]) > 5) {return false;}
+		int whiteCity = placeWhiteCity(posArray[0], posArray[1], posArray[2], posArray[3], playerIsWhite);
+		if(whiteCity==-1) {return false;}
+		if(whiteCity==1) {return true;}
+		int blackCity = placeBlackCity(posArray[0], posArray[1], posArray[2], posArray[3], playerIsWhite);
+		if(blackCity==-1) {return false;}
+		if(blackCity==1) {return true;}
+		return tryMove2(posArray, playerIsWhite);
+	}
+	
+	public boolean tryMove2(int[] posArray, boolean playerIsWhite) {
+		if(board[posArray[1]][posArray[0]]==0 || board[posArray[1]][posArray[0]]==2 || board[posArray[1]][posArray[0]]==-2) {return false;}
+		if((board[posArray[1]][posArray[0]]==1 && !playerIsWhite) || (board[posArray[1]][posArray[0]]==-1 && playerIsWhite)) {return false;}
+		if(Math.abs(posArray[3]-posArray[1])==1) {return trySoldierMove(posArray[0], posArray[1], posArray[2], posArray[3], playerIsWhite);}
+		if(Math.abs(posArray[2]-posArray[0])==1) {return trySoldierHit(posArray[0], posArray[1], posArray[2], posArray[3], playerIsWhite);}
+		if(Math.abs(posArray[2]-posArray[0])==2 && Math.abs(posArray[3]-posArray[1])!=2) {return false;}
+		if(Math.abs(posArray[3]-posArray[1])==2) {return trySoldierBackup(posArray[0], posArray[1], posArray[2], posArray[3], playerIsWhite);}
+		if(Math.abs(posArray[2]-posArray[0])==3 || Math.abs(posArray[3]-posArray[1])==3) {return tryCannonMove(posArray[0], posArray[1], posArray[2], posArray[3], playerIsWhite);}
+		if(Math.abs(posArray[2]-posArray[0])==4 || Math.abs(posArray[3]-posArray[1])==4 || Math.abs(posArray[2]-posArray[0])==5 || Math.abs(posArray[3]-posArray[1])==5) {return tryCannonShot(posArray[0], posArray[1], posArray[2], posArray[3], playerIsWhite);}
 		return false;
 	}
 	
