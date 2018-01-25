@@ -308,7 +308,17 @@ public class CannonGame extends Game implements Serializable{
 		return true;
 	}
 	
+	public void findCities() {
+		for(int i=0;i<10;i++) {
+			for(int j=0;j<10;j++) {
+				if(board[i][j]==2) {whiteCityPlaced = true;}
+				if(board[i][j]==-2) {blackCityPlaced = true;}
+			}
+		}
+	}
+	
 	public int placeWhiteCity(int pos1x, int pos1y, int pos2x, int pos2y, boolean playerIsWhite) {
+		findCities();
 		if(!whiteCityPlaced) {
 			if(blackCityPlaced && !playerIsWhite) {return -1;}
 			if(playerIsWhite) {
@@ -323,6 +333,7 @@ public class CannonGame extends Game implements Serializable{
 	}
 	
 	public int placeBlackCity(int pos1x, int pos1y, int pos2x, int pos2y, boolean playerIsWhite) {
+		findCities();
 		if(!blackCityPlaced) {
 			if(whiteCityPlaced && playerIsWhite) {return -1;}
 			if(!playerIsWhite) {
