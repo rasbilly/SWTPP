@@ -322,7 +322,7 @@ public class CannonGame extends Game implements Serializable{
 		if(!whiteCityPlaced) {
 			if(blackCityPlaced && !playerIsWhite) {return -1;}
 			if(playerIsWhite) {
-				if(pos1x-pos2x != 0 || pos1y-pos2y !=0 || pos1y!=0 || pos1x==0 || pos1x==9) {return -1;}
+				if(pos1x-pos2x != 0 || pos1y-pos2y !=0 || pos1y!=0|| pos1x==0 || pos1x==9) {return -1;}
 				board[pos1y][pos1x] = 2;
 				whiteCityPlaced = true;
 				updateNext();
@@ -335,8 +335,8 @@ public class CannonGame extends Game implements Serializable{
 	public int placeBlackCity(int pos1x, int pos1y, int pos2x, int pos2y, boolean playerIsWhite) {
 		findCities();
 		if(!blackCityPlaced) {
-			if(whiteCityPlaced && playerIsWhite) {return -1;}
-			if(!playerIsWhite) {
+			if(playerIsWhite) {return -1;
+			}else {
 				if(pos1x-pos2x != 0 || pos1y-pos2y !=0 || pos1y!=9 || pos1x==0 || pos1x==9) {return -1;}
 				board[pos1y][pos1x] = -2;
 				updateNext();
@@ -350,22 +350,19 @@ public class CannonGame extends Game implements Serializable{
 	public int[] parseString(String moveString) {
 		int[] posArray = new int[4];
 		String[] pos = moveString.split("-");
-		if(pos.length!=2 || pos[0].length()!=2 || pos[1].length()!=2) {System.out.println("length");return null;}
+		if(pos.length!=2 || pos[0].length()!=2 || pos[1].length()!=2) {return null;}
 		posArray[0] = pos[0].charAt(0)-'a';
-		try{posArray[1] = 9-Integer.parseInt(Character.toString(pos[0].charAt(1)));}catch(Exception e) {System.out.println("parseInt");return null;}
+		try{posArray[1] = 9-Integer.parseInt(Character.toString(pos[0].charAt(1)));}catch(Exception e) {return null;}
 		posArray[2] = pos[1].charAt(0)-'a';
-		try{posArray[3] = 9-Integer.parseInt(Character.toString(pos[1].charAt(1)));}catch(Exception e) {System.out.println("parseInt");return null;}
-		if(!(0<=posArray[0] && posArray[0]<=9) || !(0<=posArray[1] && posArray[1]<=9) || !(0<=posArray[2] && posArray[2]<=9) || !(0<=posArray[3] && posArray[3]<=9)) {System.out.println("range");return null;}
+		try{posArray[3] = 9-Integer.parseInt(Character.toString(pos[1].charAt(1)));}catch(Exception e) {return null;}
+		if(!(0<=posArray[0] && posArray[0]<=9)|| !(0<=posArray[2] && posArray[2]<=9)) {return null;}
 		return posArray;
 	}
 	
 	public boolean trySoldierMove(int pos1x, int pos1y, int pos2x, int pos2y, boolean playerIsWhite) {
-		int diff_x = pos2x-pos1x;
 		int diff_y = pos2y-pos1y;
-		int diff_x_abs = Math.abs(diff_x);
-		if(diff_x_abs!=0 && diff_x_abs!=1) {return false;}
 		if((diff_y<0 && playerIsWhite) || (diff_y>0 && !playerIsWhite)) {return false;}
-		if((board[pos2y][pos2x]==1 && playerIsWhite) || (board[pos2y][pos2x]==-1 && !playerIsWhite)) {return false;}
+		if((board[pos2y][pos2x]==1 && playerIsWhite)|| (board[pos2y][pos2x]==-1 && !playerIsWhite)) {return false;}
 		board[pos2y][pos2x] = playerIsWhite? 1: -1;
 		board[pos1y][pos1x] = 0;
 		updateNext();
@@ -373,12 +370,9 @@ public class CannonGame extends Game implements Serializable{
 	}
 	
 	public boolean trySoldierHit(int pos1x, int pos1y, int pos2x, int pos2y, boolean playerIsWhite) {
-		int diff_y = pos2y-pos1y;
-		if(diff_y!=0) {return false;}
-		if((diff_y<0 && playerIsWhite) || (diff_y>0 && !playerIsWhite)) {return false;}
 		if((board[pos2y][pos2x]!=-1 && board[pos2y][pos2x]!=-2 && playerIsWhite) || (board[pos2y][pos2x]!=1 && board[pos2y][pos2x]!=2 && !playerIsWhite)) {return false;}
 		boolean hitCity = false;
-		if((board[pos2y][pos2x]==2 && !playerIsWhite) || (board[pos2y][pos2x]==-2 && playerIsWhite)) {hitCity = true;}
+		if(board[pos2y][pos2x]==2 	|| board[pos2y][pos2x]==-2){ hitCity = true;}
 		board[pos2y][pos2x] = playerIsWhite? 1: -1;
 		board[pos1y][pos1x] = 0;
 		if(hitCity) {
@@ -394,7 +388,9 @@ public class CannonGame extends Game implements Serializable{
 		int diff_y = pos2y-pos1y;
 		if((diff_y<0 && !playerIsWhite) || (diff_y>0 && playerIsWhite)) {return false;}
 		if(!isThreatened(pos1x, pos1y, playerIsWhite?-1:1)) {return false;}
-		if(board[pos2y][pos2x]!=0 || board[pos2y+diff_y/2][pos2x+diff_x/2]!=0) {return false;}
+		if(board[pos2y][pos2x]!=0 
+				|| board[pos1y+diff_y/2][pos1x+diff_x/2]!=0) {
+			return false;}
 		board[pos2y][pos2x] = playerIsWhite ? 1 : -1;
 		board[pos1y][pos1x] = 0;
 		updateNext();
@@ -404,8 +400,16 @@ public class CannonGame extends Game implements Serializable{
 	public boolean tryCannonMove(int pos1x, int pos1y, int pos2x, int pos2y, boolean playerIsWhite) {
 		int diff_x = pos2x-pos1x;
 		int diff_y = pos2y-pos1y;
-		if((board[pos1y+diff_y/3][pos1x+diff_x/3]!=1 && playerIsWhite) || (board[pos1y+diff_y*2/3][pos1x+diff_x*2/3]!=1 && playerIsWhite)) {return false;}
-		if((board[pos1y+diff_y/3][pos1x+diff_x/3]!=-1 && !playerIsWhite) || (board[pos1y+diff_y*2/3][pos1x+diff_x*2/3]!=-1 && !playerIsWhite)) {return false;}
+		if((board[pos1y+diff_y/3][pos1x+diff_x/3]!=1
+				&& playerIsWhite) 
+				|| (board[pos1y+diff_y*2/3][pos1x+diff_x*2/3]!=1 
+				&& playerIsWhite)) 
+		{return false;}
+		if((board[pos1y+diff_y/3][pos1x+diff_x/3]!=-1 
+				&& !playerIsWhite) 
+				|| (board[pos1y+diff_y*2/3][pos1x+diff_x*2/3]!=-1 
+				&& !playerIsWhite)) 
+		{return false;}
 		if(board[pos2y][pos2x]!=0) {return false;}
 		board[pos2y][pos2x] = playerIsWhite ? 1 : -1;
 		board[pos1y][pos1x] = 0;
@@ -413,34 +417,34 @@ public class CannonGame extends Game implements Serializable{
 		return true;
 	}
 	
-	public boolean tryShotUp(int pos1x, int pos1y, int pos2x, int pos2y, int soldier) {
+	public boolean tryShotLeft(int pos1x, int pos1y, int pos2x, int pos2y, int soldier) {
 		int diff_y = pos2y-pos1y;
 		if(diff_y<0) {
-			if((board[pos1y-1][pos1x-1]!=soldier) || (board[pos1y-2][pos1x-2]!=soldier)) {return false;}
+			if((board[pos1y-1][pos1x-1]!=soldier) || (board[pos1y-2][pos1x-2]!=soldier)){return false;}
 			if(board[pos1y-3][pos1x-3]!=0) {return false;}
 		}else if(diff_y==0) {
-			if((board[pos1y][pos1x-1]!=soldier) || (board[pos1y][pos1x-2]!=soldier)) {return false;}
+			if((board[pos1y][pos1x-1]!=soldier) || (board[pos1y][pos1x-2]!=soldier)){return false;}
 			if(board[pos1y][pos1x-3]!=0) {return false;}
-		}else if(diff_y>0){
-			if((board[pos1y+1][pos1x-1]!=soldier) || (board[pos1y+2][pos1x-2]!=soldier)) {return false;}
+		}else{
+			if((board[pos1y+1][pos1x-1]!=soldier)|| (board[pos1y+2][pos1x-2]!=soldier)){return false;}
 			if(board[pos1y+3][pos1x-3]!=0) {return false;}
 		}
 		return true;
 	}
 	
-	public boolean tryShotSide(int pos1x, int pos1y, int pos2x, int pos2y, int soldier) {
+	public boolean tryShotVertical(int pos1x, int pos1y, int pos2x, int pos2y, int soldier) {
 		int diff_y = pos2y-pos1y;
 		if(diff_y<0) {
 			if((board[pos1y-1][pos1x]!=soldier) || (board[pos1y-2][pos1x]!=soldier)) {return false;}
 			if(board[pos1y-3][pos1x]!=0) {return false;}
-		}else if(diff_y>0){
+		}else{
 			if((board[pos1y+1][pos1x]!=soldier) || (board[pos1y+2][pos1x]!=soldier)) {return false;}
 			if(board[pos1y+3][pos1x]!=0) {return false;}
 		}
 		return true;
 	}
 	
-	public boolean tryShotDown(int pos1x, int pos1y, int pos2x, int pos2y, int soldier) {
+	public boolean tryShotRight(int pos1x, int pos1y, int pos2x, int pos2y, int soldier) {
 		int diff_y = pos2y-pos1y;
 		if(diff_y<0) {
 			if((board[pos1y-1][pos1x+1]!=soldier) || (board[pos1y-2][pos1x+2]!=soldier)) {return false;}
@@ -448,7 +452,7 @@ public class CannonGame extends Game implements Serializable{
 		}else if(diff_y==0) {
 			if((board[pos1y][pos1x+1]!=soldier) || (board[pos1y][pos1x+2]!=soldier)) {return false;}
 			if(board[pos1y][pos1x+3]!=0) {return false;}
-		}else if(diff_y>0){
+		}else{
 			if((board[pos1y+1][pos1x+1]!=soldier) || (board[pos1y+2][pos1x+2]!=soldier)) {return false;}
 			if(board[pos1y+3][pos1x+3]!=0) {return false;}
 		}
@@ -456,18 +460,19 @@ public class CannonGame extends Game implements Serializable{
 	}
 	
 	public boolean tryCannonShot(int pos1x, int pos1y, int pos2x, int pos2y, boolean playerIsWhite) {
+		//System.out.print(pos1x);System.out.print(pos1y);System.out.print(pos2x);System.out.print(pos2y);System.out.println();
 		int diff_x = pos2x-pos1x;
 		int soldier = playerIsWhite ? 1 : -1;
-		if(board[pos2y][pos2x]!=-soldier) {return false;}
+		if(board[pos2y][pos2x]!=-soldier && board[pos2y][pos2x]!=-soldier*2) {return false;}
 		if(diff_x<0) {
-			if(!tryShotUp(pos1x, pos1y, pos2x, pos2y, soldier)) {return false;}
+			if(!tryShotLeft(pos1x, pos1y, pos2x, pos2y, soldier)) {return false;}
 		}else if(diff_x==0) {
-			if(!tryShotSide(pos1x, pos1y, pos2x, pos2y, soldier)) {return false;}
-		}else if(diff_x>0){
-			if(!tryShotDown(pos1x, pos1y, pos2x, pos2y, soldier)) {return false;}
+			if(!tryShotVertical(pos1x, pos1y, pos2x, pos2y, soldier)) {return false;}
+		}else{
+			if(!tryShotRight(pos1x, pos1y, pos2x, pos2y, soldier)) {return false;}
 		}
 		boolean shotCity = false;
-		if((board[pos2y][pos2x]==2 && !playerIsWhite) || (board[pos2y][pos2x]==-2 && playerIsWhite)) {shotCity = true;}
+		if(board[pos2y][pos2x]==2 || board[pos2y][pos2x]==-2) {shotCity = true;}
 		board[pos2y][pos2x] = 0;
 		if(shotCity) {
 			finish(playerIsWhite? this.whitePlayer : this.blackPlayer);
@@ -479,7 +484,6 @@ public class CannonGame extends Game implements Serializable{
 	
 	@Override
 	public boolean tryMove(String moveString, Player player) {
-		System.out.println(getBoard());
 		boolean playerIsWhite = getPlayerBoolean(player);
 		if(!correctPlayer(playerIsWhite)) {return false;}
 		int[] posArray = parseString(moveString);
