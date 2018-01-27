@@ -342,5 +342,12 @@ public class TryMoveTest {
 		assertMove("b4-b0",true,true);
 	}
 	
+	@Test public void test21() {
+		startGame("1W8/1b8///////1w8/1B8",false);
+		assertMove("b8-b9",false,true);
+		startGame("1W8/1b8///////1w8/1B8",true);
+		assertMove("b1-b0",true,true);
+	}
+	
 	//TODO: implement test cases of same kind as example here
 }

@@ -362,10 +362,16 @@ public class CannonGame extends Game implements Serializable{
 	public boolean trySoldierMove(int pos1x, int pos1y, int pos2x, int pos2y, boolean playerIsWhite) {
 		int diff_y = pos2y-pos1y;
 		if((diff_y<0 && playerIsWhite) || (diff_y>0 && !playerIsWhite)) {return false;}
-		if((board[pos2y][pos2x]==1 && playerIsWhite)|| (board[pos2y][pos2x]==-1 && !playerIsWhite)) {return false;}
+		if(((board[pos2y][pos2x]==1 || board[pos2y][pos2x]==2) && playerIsWhite)|| ((board[pos2y][pos2x]==-1 || board[pos2y][pos2x]==-2) && !playerIsWhite)) {return false;}
+		boolean hitCity = false;
+		if(board[pos2y][pos2x]==2 	|| board[pos2y][pos2x]==-2){ hitCity = true;}
 		board[pos2y][pos2x] = playerIsWhite? 1: -1;
 		board[pos1y][pos1x] = 0;
-		updateNext();
+		if(hitCity) {
+			finish(playerIsWhite? this.whitePlayer : this.blackPlayer);
+		}else{
+			updateNext();
+		}
 		return true;
 	}
 	
