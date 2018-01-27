@@ -74,55 +74,55 @@ public class TryMoveTest {
 	
 	@Test
 	public void test0() {
+		//normal starting positions, white's turn
 		startGame("5W4/1w1w1w1w1w/1w1w1w1w1w/1w1w1w1w1w///b1b1b1b1b1/b1b1b1b1b1/b1b1b1b1b1/3B6",true);
-		assertMove("h6-h5",false,false);
-		assertMove("",true,false);
-		assertMove("a1-a1-a1",true,false);
-		assertMove("a11-a1",true,false);
-		assertMove("a1-a11",true,false);
-		assertMove("1a-a1",true,false);
-		assertMove("a1-1a",true,false);
-		assertMove("z1-a1",true,false);
-		assertMove("a1-z1",true,false);
-		assertMove(" 1-a1",true,false);
-		assertMove("a1- 1",true,false);
-		assertMove("a1-b4",true,false);
-		assertMove("a1-a4",true,false);
-		assertMove("a1-b1",true,false);
-		assertMove("a1-b2",true,false);
-		assertMove("a1-i1",true,false);
-		assertMove("a1-a9",true,false);
+		assertMove("h6-h5",false,false);		//wrong player
+		assertMove("",true,false);				//empty move string
+		assertMove("a1-a1-a1",true,false);		//too many coordinates (3)
+		assertMove("a11-a1",true,false);		//wrong first coordinate (a11)
+		assertMove("a1-a11",true,false);		//wrong second coordinate (a11)
+		assertMove("1a-a1",true,false);			//wrong order of letter and number (1a)
+		assertMove("a1-1a",true,false);			//wrong order of letter and number (1a)
+		assertMove("z1-a1",true,false);			//wrong letter (z)
+		assertMove("a1-z1",true,false);			//wrong letter (z)
+		assertMove(" 1-a1",true,false);			//space
+		assertMove("a1- 1",true,false);			//space
+		assertMove("a1-b4",true,false);			//difference between x and y coordinates not the same
+		assertMove("a1-i1",true,false);			//x difference > 5
+		assertMove("a1-a9",true,false);			//y difference > 5
 	}
 	
 	@Test
-	public void test2() {
+	public void testWhiteCity() {
+		//no cities placed yet, white's turn
 		startGame("/1w1w1w1w1w/1w1w1w1w1w/1w1w1w1w1w///b1b1b1b1b1/b1b1b1b1b1/b1b1b1b1b1/",true);
-		assertMove("b0-b0",true,false);
-		assertMove("a0-b0",true,false);
-		assertMove("a0-a1",true,false);
-		assertMove("a0-b1",true,false);
-		assertMove("a9-a9",true,false);
-		assertMove("j9-j9",true,false);
-		assertMove("b9-b9",true,true);
+		assertMove("b0-b0",true,false);			//wrong row
+		assertMove("a0-b0",true,false);			//not same x coordinates
+		assertMove("a0-a1",true,false);			//not same y coordinates
+		assertMove("a0-b1",true,false);			//not same x&y coordinates
+		assertMove("a9-a9",true,false);			//corner
+		assertMove("j9-j9",true,false);			//corner
+		assertMove("b9-b9",true,true);			//OK
 	}
 	
 	@Test
-	public void test5() {
+	public void testBlackCity() {
+		//no cities placed yet, black's turn
 		startGame("/1w1w1w1w1w/1w1w1w1w1w/1w1w1w1w1w///b1b1b1b1b1/b1b1b1b1b1/b1b1b1b1b1/",false);
-		assertMove("a0-a0",true,false);
-		assertMove("a0-b0",false,false);
-		assertMove("a0-a1",false,false);
-		assertMove("a0-b1",false,false);
-		assertMove("a0-a0",false,false);
-		assertMove("j0-j0",false,false);
-		assertMove("b1-b1",false,false);
-		assertMove("b0-b0",false,true);
+		assertMove("a0-b0",false,false);		//not same x coordinates
+		assertMove("a0-a1",false,false);		//not same y coordinates
+		assertMove("a0-b1",false,false);		//not same x&y coordinates
+		assertMove("a0-a0",false,false);		//corner
+		assertMove("j0-j0",false,false);		//corner
+		assertMove("b1-b1",false,false);		//wrong row
+		assertMove("b0-b0",false,true);			//OK
 	}
 	
 	@Test
 	public void test3() {
+		//white city not placed yet, black's turn
 		startGame("/1w1w1w1w1w/1w1w1w1w1w/1w1w1w1w1w///b1b1b1b1b1/b1b1b1b1b1/b1b1b1b1b1/1B8",false);
-		assertMove("b0-b0",false,false);
+		assertMove("b0-b0",false,false);		//black's turn although white city not placed
 	}
 	
 	@Test
@@ -265,7 +265,7 @@ public class TryMoveTest {
 	}
 	
 	@Test
-	public void test19() {
+	public void testCannonShot() {
 		startGame("Wbbbbbbbbb/bbbbbbbbbb//b1wwwwww1b/b1wwwwww1b/b1wwwwww1b//bbbbbbbbbb/bbbbbbbbbb/8B1",true);
 		assertMove("c4-c8",true,true);
 		startGame("Wbbbbbbbbb/bbbbbbbbbb//b1wwwwww1b/b1wwwwww1b/b1wwwwww1b//bbbbbbbbbb/bbbbbbbbbb/8B1",true);
