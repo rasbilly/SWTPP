@@ -274,101 +274,134 @@ public class TryMoveTest {
 	
 	@Test
 	public void test18() {
+		//normal starting positions, white's turn
 		startGame("1W8/1w1w1w1w1w/1w1w1w1w1w/1w1w1w1w1w///b1b1b1b1b1/b1b1b1b1b1/b1b1b1b1b1/1B8",true);
-		assertMove("b7-b4",true,false);
-		assertMove("b6-b3",true,false);
-		assertMove("b6-b9",true,false);
-		assertMove("b8-b5",true,true);
-		assertMove("a2-a5",false,false);
-		assertMove("a3-a6",false,false);
-		assertMove("a1-a4",false,true);
+		assertMove("b7-b4",true,false);			//no cannon
+		assertMove("b6-b3",true,false);			//no cannon
+		assertMove("b6-b9",true,false);			//target cell not empty
+		assertMove("b8-b5",true,true);			//correct cannon move
+		//black's turn
+		assertMove("a2-a5",false,false);		//no cannon
+		assertMove("a3-a6",false,false);		//no cannon
+		assertMove("a1-a4",false,true);			//correct cannon move
+		//horizontal cannon at b8-d8, white's turn
 		startGame("1W8/1www1w1w1w/1w1w1w1w1w/1w1w1w1w1w///b1b1b1b1b1/b1b1b1b1b1/b1b1b1b1b1/1B8",true);
-		assertMove("b8-e8",true,true);
+		assertMove("b8-e8",true,true);			//correct horizontal cannon move
 	}
 	
 	@Test
 	public void testCannonShot() {
+		//rows 1,2,8,9, columns a,j filled with black soldiers, white soldiers in between, white's turn
 		startGame("Wbbbbbbbbb/bbbbbbbbbb//b1wwwwww1b/b1wwwwww1b/b1wwwwww1b//bbbbbbbbbb/bbbbbbbbbb/8B1",true);
-		assertMove("c4-c8",true,true);
+		assertMove("c4-c8",true,true);			//correct vertical 4-space shot
+		//rows 1,2,8,9, columns a,j filled with black soldiers, white soldiers in between, white's turn
 		startGame("Wbbbbbbbbb/bbbbbbbbbb//b1wwwwww1b/b1wwwwww1b/b1wwwwww1b//bbbbbbbbbb/bbbbbbbbbb/8B1",true);
-		assertMove("c4-c9",true,true);
+		assertMove("c4-c9",true,true);			//correct vertical 5-space shot
+		//rows 1,2,8,9, columns a,j filled with black soldiers, white soldiers in between, white's turn
 		startGame("Wbbbbbbbbb/bbbbbbbbbb//b1wwwwww1b/b1wwwwww1b/b1wwwwww1b//bbbbbbbbbb/bbbbbbbbbb/8B1",true);
-		assertMove("c6-c2",true,true);
+		assertMove("c6-c2",true,true);			//correct vertical 4-space shot
+		//rows 1,2,8,9, columns a,j filled with black soldiers, white soldiers in between, white's turn
 		startGame("Wbbbbbbbbb/bbbbbbbbbb//b1wwwwww1b/b1wwwwww1b/b1wwwwww1b//bbbbbbbbbb/bbbbbbbbbb/8B1",true);
-		assertMove("c6-c1",true,true);
+		assertMove("c6-c1",true,true);			//correct vertical 5-space shot
+		//rows 1,2,8,9, columns a,j filled with black soldiers, white soldiers in between, white's turn
 		startGame("Wbbbbbbbbb/bbbbbbbbbb//b1wwwwww1b/b1wwwwww1b/b1wwwwww1b//bbbbbbbbbb/bbbbbbbbbb/8B1",true);
-		assertMove("f4-b8",true,true);
+		assertMove("f4-b8",true,true);			//correct diagonal 4-space shot
+		//rows 1,2,8,9, columns a,j filled with black soldiers, white soldiers in between, white's turn
 		startGame("Wbbbbbbbbb/bbbbbbbbbb//b1wwwwww1b/b1wwwwww1b/b1wwwwww1b//bbbbbbbbbb/bbbbbbbbbb/8B1",true);
-		assertMove("e4-j9",true,true);
+		assertMove("e4-j9",true,true);			//correct diagonal 5-space shot
+		//rows 1,2,8,9, columns a,j filled with black soldiers, white soldiers in between, white's turn
 		startGame("Wbbbbbbbbb/bbbbbbbbbb//b1wwwwww1b/b1wwwwww1b/b1wwwwww1b//bbbbbbbbbb/bbbbbbbbbb/8B1",true);
-		assertMove("f6-b2",true,true);
+		assertMove("f6-b2",true,true);			//correct diagonal 4-space shot
+		//rows 1,2,8,9, columns a,j filled with black soldiers, white soldiers in between, white's turn
 		startGame("Wbbbbbbbbb/bbbbbbbbbb//b1wwwwww1b/b1wwwwww1b/b1wwwwww1b//bbbbbbbbbb/bbbbbbbbbb/8B1",true);
-		assertMove("e6-j1",true,true);
+		assertMove("e6-j1",true,true);			//correct diagonal 5-space shot
+		//rows 1,2,8,9, columns a,j filled with black soldiers, white soldiers in between, white's turn
 		startGame("Wbbbbbbbbb/bbbbbbbbbb//bb1wwww1bb/bb1wwww1bb/bb1wwww1bb//bbbbbbbbbb/bbbbbbbbbb/8B1",true);
-		assertMove("f4-b4",true,true);
+		assertMove("f4-b4",true,true);			//correct horizontal 4-space shot
+		//rows 1,2,8,9, columns a,j filled with black soldiers, white soldiers in between, white's turn
 		startGame("Wbbbbbbbbb/bbbbbbbbbb//bb1wwww1bb/bb1wwww1bb/bb1wwww1bb//bbbbbbbbbb/bbbbbbbbbb/8B1",true);
-		assertMove("f4-a4",true,true);
+		assertMove("f4-a4",true,true);			//correct horizontal 5-space shot
+		//rows 1,2,8,9, columns a,j filled with black soldiers, white soldiers in between, white's turn
 		startGame("Wbbbbbbbbb/bbbbbbbbbb//bb1wwww1bb/bb1wwww1bb/bb1wwww1bb//bbbbbbbbbb/bbbbbbbbbb/8B1",true);
-		assertMove("e4-i4",true,true);
+		assertMove("e4-i4",true,true);			//correct horizontal 4-space shot
+		//rows 1,2,8,9, columns a,j filled with black soldiers, white soldiers in between, white's turn
 		startGame("Wbbbbbbbbb/bbbbbbbbbb//bb1wwww1bb/bb1wwww1bb/bb1wwww1bb//bbbbbbbbbb/bbbbbbbbbb/8B1",true);
-		assertMove("f5-a0",true,false);
-		assertMove("e4-j4",true,true);
+		assertMove("f5-a0",true,false);			//no black soldier at target cell
+		assertMove("e4-j4",true,true);			//correct horizontal 4-space shot
 		
+		//black cannon at b5-b7, black's turn
 		startGame("1W8//1b8/1b8/1b8/////1B8",false);
-		assertMove("b5-b9",false,true);
+		assertMove("b5-b9",false,true);			//correct vertical 4-space city shot
+		//white cannon at b2-b4, white's turn
 		startGame("1W8/////1w8/1w8/1w8//1B8",true);
-		assertMove("b4-b0",true,true);
+		assertMove("b4-b0",true,true);			//correct vertical 4-space city shot
 		
+		//white soldier at a8, black soldier at a4, white's turn
 		startGame("8W1/w9////b9////8B1",true);
-		assertMove("a8-a4",true,false);
+		assertMove("a8-a4",true,false);			//no cannon
+		//white soldier at a8,a7, black soldier at a4, white's turn
 		startGame("8W1/w9/w9///b9////8B1",true);
-		assertMove("a8-a4",true,false);
+		assertMove("a8-a4",true,false);			//no cannon
+		//white soldier at a8,a7,a6,a5, black soldier at a4, white's turn
 		startGame("8W1/w9/w9/w9/b9/b9////8B1",true);
-		assertMove("a8-a4",true,false);
+		assertMove("a8-a4",true,false);			//shot blocked
+		//white soldier at a4, black soldier at a8, white's turn
 		startGame("8W1/b9////w9////8B1",true);
-		assertMove("a4-a8",true,false);
+		assertMove("a4-a8",true,false);			//no cannon
+		//white soldier at a4,a5, black soldier at a8, white's turn
 		startGame("8W1/b9///w9/w9////8B1",true);
-		assertMove("a4-a8",true,false);
+		assertMove("a4-a8",true,false);			//no cannon
+		//white soldier at a4,a5,a6,a7, black soldier at a8, white's turn
 		startGame("8W1/b9/b9/w9/w9/w9////8B1",true);
-		assertMove("a4-a8",true,false);
+		assertMove("a4-a8",true,false);			//shot blocked
 		
+		//black soldier at a8,i8, white soldier at e8, white's turn
 		startGame("8W1/b3w3b1////////8B1",true);
-		assertMove("e8-a8",true,false);
-		assertMove("e8-i8",true,false);
+		assertMove("e8-a8",true,false);			//no cannon
+		assertMove("e8-i8",true,false);			//no cannon
+		//black soldier at a8,i8, white soldier at d8,e8,f8, white's turn
 		startGame("8W1/b2www2b1////////8B1",true);
-		assertMove("e8-a8",true,false);
-		assertMove("e8-i8",true,false);
+		assertMove("e8-a8",true,false);			//no cannon
+		assertMove("e8-i8",true,false);			//no cannon
+		//black soldier at a8,b8,h8,i8, white soldier at c8,d8,e8,f8,g8, white's turn
 		startGame("8W1/bbwwwwwbb1////////8B1",true);
-		assertMove("e8-a8",true,false);
-		assertMove("e8-i8",true,false);
+		assertMove("e8-a8",true,false);			//shot blocked
+		assertMove("e8-i8",true,false);			//shot blocked
 		
+		//black soldiers at a8,i8,a0,i0, white soldier at e4, white's turn
 		startGame("8W1/b7b1////4w41////bB6b1",true);
-		assertMove("e4-a8",true,false);
-		assertMove("e4-i8",true,false);
-		assertMove("e4-a0",true,false);
-		assertMove("e4-i0",true,false);
+		assertMove("e4-a8",true,false);			//no cannon
+		assertMove("e4-i8",true,false);			//no cannon
+		assertMove("e4-a0",true,false);			//no cannon
+		assertMove("e4-i0",true,false);			//no cannon
+		//black soldiers at a8,i8,a0,i0, white soldiers at d3,f3,e4,d5,f5, white's turn
 		startGame("8W1/b7b1///3w1w4/4w5/3w1w4///bB6b1",true);
-		assertMove("e4-a8",true,false);
-		assertMove("e4-i8",true,false);
-		assertMove("e4-a0",true,false);
-		assertMove("e4-i0",true,false);
+		assertMove("e4-a8",true,false);			//no cannon
+		assertMove("e4-i8",true,false);			//no cannon
+		assertMove("e4-a0",true,false);			//no cannon
+		assertMove("e4-i0",true,false);			//no cannon
+		//black soldiers at a8,i8,a0,i0,row 1,row 7, white soldiers at c2,g2,d3,f3,e4,d5,f5,c6,g6, white's turn
 		startGame("8W1/b7b1/bbbbbbbbbb/2w3w3/3w1w4/4w5/3w1w4/2w3w3/bbbbbbbbbb/bB6b1",true);
-		assertMove("e4-a8",true,false);
-		assertMove("e4-i8",true,false);
-		assertMove("e4-a0",true,false);
-		assertMove("e4-i0",true,false);
+		assertMove("e4-a8",true,false);			//shot blocked
+		assertMove("e4-i8",true,false);			//shot blocked
+		assertMove("e4-a0",true,false);			//shot blocked
+		assertMove("e4-i0",true,false);			//shot blocked
 		
+		//black cannon at b5-b7, black's turn
 		startGame("1W8//1b8/1b8/1b8/////1B8",false);
-		assertMove("b5-b9",false,true);
+		assertMove("b5-b9",false,true);			//correct vertical 4-space city shot
+		//white cannon at b2-b4, white's turn
 		startGame("1W8/////1w8/1w8/1w8//1B8",true);
-		assertMove("b4-b0",true,true);
+		assertMove("b4-b0",true,true);			//correct vertical 4-space city shot
 	}
 	
 	@Test public void test21() {
+		//black soldier at b8, white soldier at b1, black's turn
 		startGame("1W8/1b8///////1w8/1B8",false);
-		assertMove("b8-b9",false,true);
+		assertMove("b8-b9",false,true);			//correct city hit
+		//black soldier at b8, white soldier at b1, white's turn
 		startGame("1W8/1b8///////1w8/1B8",true);
-		assertMove("b1-b0",true,true);
+		assertMove("b1-b0",true,true);			//correct city hit
 	}
 	
 	//TODO: implement test cases of same kind as example here
