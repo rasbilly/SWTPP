@@ -102,7 +102,7 @@ public class TryMoveTest {
 		assertMove("a0-b1",true,false);			//not same x&y coordinates
 		assertMove("a9-a9",true,false);			//corner
 		assertMove("j9-j9",true,false);			//corner
-		assertMove("b9-b9",true,true);			//OK
+		assertMove("b9-b9",true,true);			//placed white city
 	}
 	
 	@Test
@@ -115,7 +115,7 @@ public class TryMoveTest {
 		assertMove("a0-a0",false,false);		//corner
 		assertMove("j0-j0",false,false);		//corner
 		assertMove("b1-b1",false,false);		//wrong row
-		assertMove("b0-b0",false,true);			//OK
+		assertMove("b0-b0",false,true);			//placed black city
 	}
 	
 	@Test
@@ -127,127 +127,149 @@ public class TryMoveTest {
 	
 	@Test
 	public void test4() {
+		//white city not placed yet, white's turn
 		startGame("/1w1w1w1w1w/1w1w1w1w1w/1w1w1w1w1w///b1b1b1b1b1/b1b1b1b1b1/b1b1b1b1b1/1B8",true);
-		assertMove("b0-b0",true,false);
+		assertMove("b0-b0",true,false);			//wrong row
 	}
 	
 	@Test
 	public void test7() {
+		//black city not placed yet, black's turn
 		startGame("1W8/1w1w1w1w1w/1w1w1w1w1w/1w1w1w1w1w///b1b1b1b1b1/b1b1b1b1b1/b1b1b1b1b1/",false);
-		assertMove("b0-b0",false,true);
+		assertMove("b0-b0",false,true);			//corner
 	}
 	
 	@Test
 	public void test6() {
+		//black city not placed yet, white's turn
 		startGame("1W8/1w1w1w1w1w/1w1w1w1w1w/1w1w1w1w1w///b1b1b1b1b1/b1b1b1b1b1/b1b1b1b1b1/",true);
-		assertMove("b0-b0",true,false);
+		assertMove("b0-b0",true,false);			//white's turn although black city not placed
 	}
 	
 	@Test
 	public void test8() {
+		//normal starting positions, white's turn
 		startGame("1W8/1w1w1w1w1w/1w1w1w1w1w/1w1w1w1w1w///b1b1b1b1b1/b1b1b1b1b1/b1b1b1b1b1/1B8",true);
-		assertMove("b0-b0",true,false);
-		assertMove("b9-b9",true,false);
-		assertMove("a0-a0",true,false);
-		assertMove("c1-d2",true,false);
-		assertMove("b8-b9",true,false);
-		assertMove("c1-c0",true,false);
-		assertMove("b8-b7",true,false);
-		assertMove("b6-c6",true,false);
-		assertMove("b7-d9",true,false);
-		assertMove("b6-d6",true,false);
-		assertMove("b6-b4",true,false);
-		assertMove("b6-b5",true,true);
+		assertMove("b0-b0",true,false);			//placing city but city already placed
+		assertMove("b9-b9",true,false);			//placing city but city already placed
+		assertMove("a0-a0",true,false);			//placing city but city already placed
+		assertMove("b8-b9",true,false);			//wrong direction
+		assertMove("c1-c0",true,false);			//wrong soldier color
+		assertMove("b8-b7",true,false);			//friendly soldier in the way
+		assertMove("b6-c6",true,false);			//cannot move horizontally
+		assertMove("b6-d6",true,false);			//cannot backup horizontally
+		assertMove("b6-b4",true,false);			//cannot backup forward
+		assertMove("b6-b5",true,true);			//correct vertical soldier move
 	}
 	
 	@Test
 	public void test10() {
+		//normal starting positions, white's turn
 		startGame("1W8/1w1w1w1w1w/1w1w1w1w1w/1w1w1w1w1w///b1b1b1b1b1/b1b1b1b1b1/b1b1b1b1b1/1B8",true);
-		assertMove("d6-c5",true,true);
+		assertMove("d6-c5",true,true);			//correct diagonal soldier move
 	}
 	
 	@Test
 	public void test9() {
+		//normal starting positions, black's turn
 		startGame("1W8/1w1w1w1w1w/1w1w1w1w1w/1w1w1w1w1w///b1b1b1b1b1/b1b1b1b1b1/b1b1b1b1b1/1B8",false);
-		assertMove("b8-b8",false,false);
-		assertMove("c1-c1",false,false);
-		assertMove("c1-c0",false,false);
-		assertMove("b8-b9",false,false);
-		assertMove("c1-c2",false,false);
-		assertMove("c3-d3",false,false);
-		assertMove("a2-c0",false,false);
-		assertMove("a3-a5",false,false);
-		assertMove("a3-a1",false,false);
-		assertMove("c3-c4",false,true);
+		assertMove("b8-b8",false,false);		//placing city but city already placed
+		assertMove("c1-c1",false,false);		//placing city but city already placed
+		assertMove("c1-c0",false,false);		//wrong direction
+		assertMove("b8-b9",false,false);		//wrong soldier color
+		assertMove("c1-c2",false,false);		//friendly soldier in the way 
+		assertMove("c3-d3",false,false);		//cannot move horizontally
+		assertMove("a2-c0",false,false);		//cannot backup, not threatened
+		assertMove("a3-a5",false,false);		//cannot backup forward
+		assertMove("a3-a1",false,false);		//target cell not empty
+		assertMove("c3-c4",false,true);			//correct vertical soldier move
 	}
 	
 	@Test
 	public void test11() {
+		//black soldier at b6, white's turn
 		startGame("1W8/1w1w1w1w1w/1w1w1w1w1w/1b1w1w1w1w///b1b1b1b1b1/b1b1b1b1b1/b1b1b1b1b1/1B8",true);
-		assertMove("b7-b6",true,true);
+		assertMove("b7-b6",true,true);			//correct vertical hit
 	}
 	
 	@Test
 	public void test12() {
+		//black soldier at b6, black's turn
 		startGame("1W8/1w1w1w1w1w/1w1w1w1w1w/1b1w1w1w1w///b1b1b1b1b1/b1b1b1b1b1/b1b1b1b1b1/1B8",false);
-		assertMove("b6-b7",false,true);
+		assertMove("b6-b7",false,true);			//correct vertical hit
 	}
 	
 	@Test
 	public void test13() {
+		//white soldier at b1, white's turn
 		startGame("1W8/1w1w1w1w1w/1w1w1w1w1w/1w1w1w1w1w///b1b1b1b1b1/b1b1b1b1b1/bwb1b1b1b1/1B8",true);
-		assertMove("b1-a1",true,true);
+		assertMove("b1-a1",true,true);			//correct horizontal hit
 	}
 	
 	@Test
 	public void test14() {
+		//white soldier at b1, black's turn
 		startGame("1W8/1w1w1w1w1w/1w1w1w1w1w/1w1w1w1w1w///b1b1b1b1b1/b1b1b1b1b1/bwb1b1b1b1/1B8",false);
-		assertMove("c3-d3",false,false);
-		assertMove("a1-b1",false,true);
+		assertMove("c3-d3",false,false);		//cannot move horizontally
+		assertMove("a1-b1",false,true);			//correct horizontal hit
 	}
 	
 	@Test
 	public void test15() {
+		//white soldier at a9,c0, black soldier at c9,a0, black's turn
 		startGame("wWb7/1w1w1w1w1w/1w1w1w1w1w/1w1w1w1w1w///b1b1b1b1b1/b1b1b1b1b1/bwb1b1b1b1/bBw7",false);
-		assertMove("a0-b0",false,false);
-		assertMove("c9-b9",false,true);
+		assertMove("a0-b0",false,false);		//cannot move horizontally into city
+		assertMove("c9-b9",false,true);			//correct horizontal city hit
 	}
 	
 	@Test
 	public void test16() {
+		//white soldier at a9,c0, black soldier at c9,a0, white's turn
 		startGame("wWb7/1w1w1w1w1w/1w1w1w1w1w/1w1w1w1w1w///b1b1b1b1b1/b1b1b1b1b1/bwb1b1b1b1/bBw7",true);
-		assertMove("c9-b9",true,false);
-		assertMove("c0-b0",true,true);
+		assertMove("c9-b9",true,false);			//cannot move horizontally into city
+		assertMove("c0-b0",true,true);			//correct horizontal city hit
 	}
 	
 	@Test
 	public void test17() {
+		//white soldiers at a7,j7,c0, black soldier at c9, white's turn
 		startGame("1Wb7//w8w///////1Bw7",true);
-		assertMove("a7-a9",true,false);
-		assertMove("j7-j9",true,false);
-		assertMove("c0-c2",true,false);
+		assertMove("a7-a9",true,false);			//cannot backup, not threatened
+		assertMove("j7-j9",true,false);			//cannot backup, not threatened
+		assertMove("c0-c2",true,false);			//cannot backup, not threatened
+		//white soldiers at a7,j7,c0, black soldier at c9, black's turn
 		startGame("1Wb7//w8w///////1Bw7",false);
-		assertMove("c9-c7",false,false);
+		assertMove("c9-c7",false,false);		//cannot backup, not threatened
+		//white soldier at b7, black soldier at a8, white's turn
 		startGame("8W1/b9/1w8///////1B8",true);
-		assertMove("b7-b9",true,true);
+		assertMove("b7-b9",true,true);			//correct backup
+		//white soldier at b7, black soldier at b8, white's turn
 		startGame("8W1/1b8/1w8///////1B8",true);
-		assertMove("b7-b9",true,false);
+		assertMove("b7-b9",true,false);			//backup path blocked
+		//white soldier at b7, black soldier at c8, white's turn
 		startGame("8W1/2b7/1w8///////1B8",true);
-		assertMove("b7-b9",true,true);
+		assertMove("b7-b9",true,true);			//correct backup
+		//white soldier at b7, black soldier at a7, white's turn
 		startGame("8W1//bw8///////1B8",true);
-		assertMove("b7-b9",true,true);
+		assertMove("b7-b9",true,true);			//correct backup
+		//white soldier at b7, black soldier at c7, white's turn
 		startGame("8W1//1wb7///////1B8",true);
-		assertMove("b7-b9",true,true);
+		assertMove("b7-b9",true,true);			//correct backup
+		//white soldier at b7, black soldier at a6, white's turn
 		startGame("8W1//1w8/b9//////1B8",true);
-		assertMove("b7-b9",true,true);
+		assertMove("b7-b9",true,true);			//correct backup
+		//white soldier at b7, black soldier at b6, white's turn
 		startGame("8W1//1w8/1b8//////1B8",true);
-		assertMove("b7-b9",true,true);
+		assertMove("b7-b9",true,true);			//correct backup
+		//white soldier at b7, black soldier at c6, white's turn
 		startGame("8W1//1w8/2b7//////1B8",true);
-		assertMove("b7-b9",true,true);
+		assertMove("b7-b9",true,true);			//correct backup
+		//white soldier at b9,b7, black soldier at c6, white's turn
 		startGame("1w6W1//1w8/2b7//////1B8",true);
-		assertMove("b7-b9",true,false);
+		assertMove("b7-b9",true,false);			//target cell not empty
+		//white soldier at b7,b9, black soldier at c6, black's turn
 		startGame("1w6W1//1w8/2b7//////1B8",false);
-		assertMove("c6-c4",false,true);		
+		assertMove("c6-c4",false,true);			//correct backup
 	}
 	
 	@Test
