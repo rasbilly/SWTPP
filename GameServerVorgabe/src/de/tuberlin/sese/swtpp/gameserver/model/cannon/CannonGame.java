@@ -359,22 +359,28 @@ public class CannonGame extends Game implements Serializable{
 		return posArray;
 	}
 	
+	public int getSoldierNumber(boolean playerIsWhite) {
+		return playerIsWhite? 1 : -1;
+	}
+	
 	public boolean trySoldierMove(int pos1x, int pos1y, int pos2x, int pos2y, boolean playerIsWhite) {
 		int diff_y = pos2y-pos1y;
-		if((diff_y<0 && playerIsWhite) || (diff_y>0 && !playerIsWhite)) {return false;}
+		if(((diff_y<0 && playerIsWhite) || (diff_y>0 && !playerIsWhite))) {return false;}
+		return executeSoldierMove(pos1x,pos1y,pos2x,pos2y, playerIsWhite);
+	}
+	
+	public boolean executeSoldierMove(int pos1x, int pos1y, int pos2x, int pos2y, boolean playerIsWhite) {
 		if(((board[pos2y][pos2x]==1 || board[pos2y][pos2x]==2) && playerIsWhite)|| ((board[pos2y][pos2x]==-1 || board[pos2y][pos2x]==-2) && !playerIsWhite)) {return false;}
-		boolean hitCity = false;
-		if(board[pos2y][pos2x]==2 	|| board[pos2y][pos2x]==-2){ hitCity = true;}
-		board[pos2y][pos2x] = playerIsWhite? 1: -1;
+		int target = Math.abs(board[pos2y][pos2x]);
+		board[pos2y][pos2x] = getSoldierNumber(playerIsWhite);
 		board[pos1y][pos1x] = 0;
-		if(hitCity) {
+		if(target==2) {
 			finish(playerIsWhite? this.whitePlayer : this.blackPlayer);
 		}else{
 			updateNext();
 		}
 		return true;
 	}
-	
 	public boolean trySoldierHit(int pos1x, int pos1y, int pos2x, int pos2y, boolean playerIsWhite) {
 		if((board[pos2y][pos2x]!=-1 && board[pos2y][pos2x]!=-2 && playerIsWhite) || (board[pos2y][pos2x]!=1 && board[pos2y][pos2x]!=2 && !playerIsWhite)) {return false;}
 		boolean hitCity = false;
@@ -432,9 +438,14 @@ public class CannonGame extends Game implements Serializable{
 			if((board[pos1y][pos1x-1]!=soldier) || (board[pos1y][pos1x-2]!=soldier)){return false;}
 			if(board[pos1y][pos1x-3]!=0) {return false;}
 		}else{
-			if((board[pos1y+1][pos1x-1]!=soldier)|| (board[pos1y+2][pos1x-2]!=soldier)){return false;}
-			if(board[pos1y+3][pos1x-3]!=0) {return false;}
+			if(!tryShotDownLeft(pos1x, pos1y, pos2x, pos2y, soldier)) {return false;}
 		}
+		return true;
+	}
+	
+	public boolean tryShotDownLeft(int pos1x, int pos1y, int pos2x, int pos2y, int soldier) {
+		if((board[pos1y+1][pos1x-1]!=soldier)|| (board[pos1y+2][pos1x-2]!=soldier)){return false;}
+		if(board[pos1y+3][pos1x-3]!=0) {return false;}
 		return true;
 	}
 	
@@ -459,17 +470,19 @@ public class CannonGame extends Game implements Serializable{
 			if((board[pos1y][pos1x+1]!=soldier) || (board[pos1y][pos1x+2]!=soldier)) {return false;}
 			if(board[pos1y][pos1x+3]!=0) {return false;}
 		}else{
-			if((board[pos1y+1][pos1x+1]!=soldier) || (board[pos1y+2][pos1x+2]!=soldier)) {return false;}
-			if(board[pos1y+3][pos1x+3]!=0) {return false;}
+			if(!tryShotDownRight(pos1x, pos1y, pos2x, pos2y, soldier)) {return false;}
 		}
 		return true;
 	}
 	
-	public boolean tryCannonShot(int pos1x, int pos1y, int pos2x, int pos2y, boolean playerIsWhite) {
-		//System.out.print(pos1x);System.out.print(pos1y);System.out.print(pos2x);System.out.print(pos2y);System.out.println();
+	public boolean tryShotDownRight(int pos1x, int pos1y, int pos2x, int pos2y, int soldier) {
+		if((board[pos1y+1][pos1x+1]!=soldier) || (board[pos1y+2][pos1x+2]!=soldier)) {return false;}
+		if(board[pos1y+3][pos1x+3]!=0) {return false;}
+		return true;
+	}
+	
+	public boolean shotPossible(int pos1x, int pos1y, int pos2x, int pos2y, int soldier) {
 		int diff_x = pos2x-pos1x;
-		int soldier = playerIsWhite ? 1 : -1;
-		if(board[pos2y][pos2x]!=-soldier && board[pos2y][pos2x]!=-soldier*2) {return false;}
 		if(diff_x<0) {
 			if(!tryShotLeft(pos1x, pos1y, pos2x, pos2y, soldier)) {return false;}
 		}else if(diff_x==0) {
@@ -477,6 +490,14 @@ public class CannonGame extends Game implements Serializable{
 		}else{
 			if(!tryShotRight(pos1x, pos1y, pos2x, pos2y, soldier)) {return false;}
 		}
+		return true;
+	}
+	
+	public boolean tryCannonShot(int pos1x, int pos1y, int pos2x, int pos2y, boolean playerIsWhite) {
+		//System.out.print(pos1x);System.out.print(pos1y);System.out.print(pos2x);System.out.print(pos2y);System.out.println();
+		int soldier = playerIsWhite ? 1 : -1;
+		if(board[pos2y][pos2x]!=-soldier && board[pos2y][pos2x]!=-soldier*2) {return false;}
+		if(!shotPossible(pos1x, pos1y, pos2x, pos2y, soldier)) {return false;}
 		boolean shotCity = false;
 		if(board[pos2y][pos2x]==2 || board[pos2y][pos2x]==-2) {shotCity = true;}
 		board[pos2y][pos2x] = 0;
@@ -496,20 +517,28 @@ public class CannonGame extends Game implements Serializable{
 		if(posArray==null) {return false;}		
 		if(posArray[2]-posArray[0]!=0 && posArray[3]-posArray[1]!=0 && Math.abs(posArray[2]-posArray[0])!=Math.abs(posArray[3]-posArray[1])) {return false;}
 		if(Math.abs(posArray[2]-posArray[0]) > 5 || Math.abs(posArray[3]-posArray[1]) > 5) {return false;}
+		return tryMove2(posArray, playerIsWhite);
+	}
+	
+	public boolean tryMove2(int[] posArray, boolean playerIsWhite) {
 		int whiteCity = placeWhiteCity(posArray[0], posArray[1], posArray[2], posArray[3], playerIsWhite);
 		if(whiteCity==-1) {return false;}
 		if(whiteCity==1) {return true;}
 		int blackCity = placeBlackCity(posArray[0], posArray[1], posArray[2], posArray[3], playerIsWhite);
 		if(blackCity==-1) {return false;}
 		if(blackCity==1) {return true;}
-		return tryMove2(posArray, playerIsWhite);
+		return tryMove3(posArray, playerIsWhite);
 	}
 	
-	public boolean tryMove2(int[] posArray, boolean playerIsWhite) {
+	public boolean tryMove3(int[] posArray, boolean playerIsWhite) {
 		if(board[posArray[1]][posArray[0]]==0 || board[posArray[1]][posArray[0]]==2 || board[posArray[1]][posArray[0]]==-2) {return false;}
 		if((board[posArray[1]][posArray[0]]==1 && !playerIsWhite) || (board[posArray[1]][posArray[0]]==-1 && playerIsWhite)) {return false;}
 		if(Math.abs(posArray[3]-posArray[1])==1) {return trySoldierMove(posArray[0], posArray[1], posArray[2], posArray[3], playerIsWhite);}
 		if(Math.abs(posArray[2]-posArray[0])==1) {return trySoldierHit(posArray[0], posArray[1], posArray[2], posArray[3], playerIsWhite);}
+		return tryMove4(posArray, playerIsWhite);
+	}
+	
+	public boolean tryMove4(int[] posArray, boolean playerIsWhite) {
 		if(Math.abs(posArray[2]-posArray[0])==2 && Math.abs(posArray[3]-posArray[1])!=2) {return false;}
 		if(Math.abs(posArray[3]-posArray[1])==2) {return trySoldierBackup(posArray[0], posArray[1], posArray[2], posArray[3], playerIsWhite);}
 		if(Math.abs(posArray[2]-posArray[0])==3 || Math.abs(posArray[3]-posArray[1])==3) {return tryCannonMove(posArray[0], posArray[1], posArray[2], posArray[3], playerIsWhite);}
@@ -517,15 +546,72 @@ public class CannonGame extends Game implements Serializable{
 		return false;
 	}
 	
+	
 	private boolean isThreatened(int x,int y, int opponent) {
-		if(y>=1 && x>= 1 && board[y-1][x-1]==opponent) {return true;}
-		if(y>=1 && board[y-1][x]==opponent) {return true;}
-		if(y>=1 && x<= 8 && board[y-1][x+1]==opponent) {return true;}
-		if(x>= 1 && board[y][x-1]==opponent) {return true;}
-		if(x<= 8 && board[y][x+1]==opponent) {return true;}
-		if(y<=8 && x>= 1 && board[y+1][x-1]==opponent) {return true;}
-		if(y<=8 && board[y+1][x]==opponent) {return true;}
-		if(y<=8 && x<= 8 && board[y+1][x+1]==opponent) {return true;}
-		return false;
+		return isThreatenedUpLeft(x, y, opponent);
+	}
+	
+	private boolean isThreatenedUpLeft(int x,int y, int opponent) {
+		if(y>=1 && x>= 1 && board[y-1][x-1]==opponent) {
+			return true;
+		}else {
+			return isThreatenedUp(x,y,opponent);
+		}
+	}
+	
+	private boolean isThreatenedUp(int x, int y, int opponent) {
+		if(y>=1 && board[y-1][x]==opponent) {
+			return true;
+		}else {
+			return isThreatenedUpRight(x,y,opponent);
+		}
+	}
+	
+	private boolean isThreatenedUpRight(int x, int y, int opponent) {
+		if(y>=1 && x<= 8 && board[y-1][x+1]==opponent) {
+			return true;
+		}else {
+			return isThreatenedLeft(x,y,opponent);
+		}
+	}
+	
+	private boolean isThreatenedLeft(int x, int y, int opponent) {
+		if(x>= 1 && board[y][x-1]==opponent)  {
+			return true;
+		}else {
+			return isThreatenedRight(x,y,opponent);
+		}
+	}
+	
+	private boolean isThreatenedRight(int x, int y, int opponent) {
+		if(x<= 8 && board[y][x+1]==opponent)  {
+			return true;
+		}else {
+			return isThreatenedDownLeft(x,y,opponent);
+		}
+	}
+	
+	private boolean isThreatenedDownLeft(int x, int y, int opponent) {
+		if(y<=8 && x>= 1 && board[y+1][x-1]==opponent)   {
+			return true;
+		}else {
+			return isThreatenedDown(x,y,opponent);
+		}
+	}
+	
+	private boolean isThreatenedDown(int x, int y, int opponent) {
+		if(y<=8 && board[y+1][x]==opponent)   {
+			return true;
+		}else {
+			return isThreatenedDownRight(x,y,opponent);
+		}
+	}
+	
+	private boolean isThreatenedDownRight(int x, int y, int opponent) {
+		if(y<=8 && x<= 8 && board[y+1][x+1]==opponent)   {
+			return true;
+		}else {
+			return false;
+		}
 	}
 }
