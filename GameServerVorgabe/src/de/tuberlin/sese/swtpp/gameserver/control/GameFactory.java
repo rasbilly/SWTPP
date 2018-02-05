@@ -8,7 +8,8 @@ import de.tuberlin.sese.swtpp.gameserver.model.cannon.HaskellBot;
 public class GameFactory {
 	
 	//TODO: change path to bot executable if desired
-	public static final String BOT_PATH = "C:\\Users\\furny\\git\\SWTPP\\GameServerVorgabe\\BotVorgabe";
+	static String workingDir = "%\\GameServerVorgabe";
+	public static final String BOT_PATH = workingDir+"\\Bot";
 	public static final String BOT_COMMAND = "cmd /c main.exe";
 	
 	public static Game createGame() {
